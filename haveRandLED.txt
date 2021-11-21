@@ -1,0 +1,183 @@
+#include <IRremote.h>
+
+const byte IR_RECEIVE_PIN = 2;
+int switchstate = LOW;
+long ran;
+
+//int photo_sensor_value = 0;
+//int step_count;
+void setup() {
+  //set up pin as input for Photoresister sensor
+//  pinMode(A0, INPUT);
+  //Serial.begin(9600); //Enable Serial Communication
+  //set up to start IR Reciever
+  Serial.begin(9600);
+  Serial.println("IR Receive test");
+  IrReceiver.begin(IR_RECEIVE_PIN, ENABLE_LED_FEEDBACK);
+  //seting up pins as outputs for LEDs
+  for(int i=8; i<=11; i++)
+  pinMode(i, OUTPUT);
+  //seting up pins as outputs for motor driver
+//  pinMode(2, OUTPUT);
+//  pinMode(3, OUTPUT);
+//  pinMode(4, OUTPUT);
+//  pinMode(5, OUTPUT);
+
+}
+
+void loop() {
+    switchstate = digitalRead(2);
+
+    if(switchstate == HIGH){    
+    ran = random(1,8);
+    
+    if (ran == 1){       
+      digitalWrite(8,LOW);
+      digitalWrite(9,HIGH);
+      digitalWrite(10,LOW);
+      digitalWrite(11,LOW);
+      delay(1000);
+     
+    }
+    else if (ran == 2){
+      digitalWrite(8,LOW);
+      digitalWrite(9,LOW);
+      digitalWrite(10,HIGH);
+      digitalWrite(11,LOW);
+      delay(1000);
+    }
+    else if (ran == 3) {
+      digitalWrite(8,LOW);
+      digitalWrite(9,HIGH);
+      digitalWrite(10,HIGH);
+      digitalWrite(11,LOW);
+      delay(1000);
+    }
+    else if (ran == 4){
+       digitalWrite(8,LOW);
+       digitalWrite(9,LOW);
+       digitalWrite(10,LOW);
+       digitalWrite(11,HIGH);
+       delay(1000);
+    
+    }
+    else if (ran == 5){
+       digitalWrite(8,LOW);
+       digitalWrite(9,HIGH);
+       digitalWrite(10,LOW);
+       digitalWrite(11,HIGH);
+       delay(1000);
+    
+     }
+    else if (ran == 6){
+       digitalWrite(8,LOW);
+       digitalWrite(9,LOW);
+       digitalWrite(10,HIGH);
+       digitalWrite(11,HIGH);
+       delay(1000);
+  
+    }
+    else if (ran == 7){
+       digitalWrite(8,LOW);
+       digitalWrite(9,HIGH);   
+       digitalWrite(10,HIGH);
+       digitalWrite(11,HIGH);
+       delay(1000);
+   }
+   
+  }
+  
+  else {
+  digitalWrite(3,HIGH);
+  digitalWrite(4,LOW);
+  digitalWrite(5,LOW);
+  digitalWrite(6,LOW);
+  }
+
+//  photo_sensor_value = analogRead(A0);
+//  if (photo_sensor_value >= 1016)
+//  {
+//    digitalWrite(8, LOW);
+//    digitalWrite(9, LOW);
+//    digitalWrite(10, LOW);
+//    digitalWrite(11, LOW);
+//  } 
+//  else
+//  {
+//    digitalWrite(8, HIGH);
+//    digitalWrite(9, HIGH);
+//    digitalWrite(10, HIGH);
+//    digitalWrite(11, HIGH);
+//  }
+  //Get Remote key code & print on serial monitor
+  if (IrReceiver.decode())
+   {
+      String ir_code = String(IrReceiver.decodedIRData.command, HEX);
+      Serial.println(ir_code);
+
+
+      if(ir_code == "c"){
+      do
+      {
+      for(int i=8; i<=11; i++) {
+      digitalWrite(i,HIGH);
+      delay(200);
+      digitalWrite(i,LOW);
+      ++i;
+      }
+    
+      for(int i=10; i>=9; i--) {
+      digitalWrite(i,HIGH);
+      delay(200);
+      digitalWrite(i,LOW);
+      --i;
+      }break;
+      }while(ir_code == "c");
+      }
+      else if(ir_code == "18"){
+      do
+      {
+      for(int i=8; i<=11; i++) {
+      digitalWrite(i,HIGH);
+      digitalWrite(i-1,HIGH);
+      digitalWrite(i+1,HIGH);
+      delay(1000);
+      digitalWrite(i,LOW);
+      digitalWrite(i-1,LOW);
+      digitalWrite(i+1,LOW);
+      ++i;
+      }
+      for(int i=10; i>=9; i--) {
+      digitalWrite(i,HIGH);
+      digitalWrite(i-1,HIGH);
+      digitalWrite(i+1,HIGH);
+      delay(1000);
+      digitalWrite(i,LOW);
+      digitalWrite(i-1,LOW);
+      digitalWrite(i+1,LOW);
+      --i;
+      }break;
+      }while(ir_code != "18");
+      }
+      else if(ir_code == "5e") {
+      do
+      {
+      for(int i=8; i<=11; i=i+2) {
+      digitalWrite(i,HIGH);
+      delay(1500);
+      digitalWrite(i,LOW);
+      ++i;
+      }
+      for(int i=11; i>=8; i=i-2) {
+      digitalWrite(i,HIGH);
+      delay(1500);
+      digitalWrite(i,LOW);
+      --i;
+      }break;
+      }while(ir_code == "5e");
+      }
+      
+   }
+
+      IrReceiver.resume();
+}
